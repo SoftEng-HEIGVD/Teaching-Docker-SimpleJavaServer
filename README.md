@@ -13,4 +13,16 @@ There are two ways to build the image:
 
 ## Running a container
 
-## Exploring the
+To run a container, just use this command:
+
+```
+docker run -p 2205:2205 oliechti/teaching-docker-simplejavaserver
+```
+
+## Exploring the image, via a new container
+
+To log into a new container started from the image, use this command:
+
+```
+docker run -it docker run -p 2205:2205 oliechti/teaching-docker-simplejavaserver /bin/bash
+```
