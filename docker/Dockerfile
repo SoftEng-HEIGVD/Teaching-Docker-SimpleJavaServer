@@ -19,4 +19,4 @@ EXPOSE 2205
 #
 # This is the command that is executed when the Docker container starts
 #
-ENTRYPOINT ["java", "-jar", "/opt/app/server.jar"]
+CMD ["java", "-jar", "/opt/app/server.jar"]
