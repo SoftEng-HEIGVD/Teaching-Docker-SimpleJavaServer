@@ -24,5 +24,5 @@ docker run -p 2205:2205 oliechti/teaching-docker-simplejavaserver
 To log into a new container started from the image, use this command:
 
 ```
-docker run -it docker run -p 2205:2205 oliechti/teaching-docker-simplejavaserver /bin/bash
+docker run -it -p 2205:2205 oliechti/teaching-docker-simplejavaserver /bin/bash
 ```
