@@ -7,4 +7,4 @@ mvn clean install --file ../src/StreamingTimeServer/pom.xml
 cp ../src/StreamingTimeServer/target/StreamingTimeServer-1.0-SNAPSHOT-standalone.jar .
 
 # Build the Docker image locally
-docker build --tag java-streaming-server .
+docker build --tag oliechti/teaching-docker-simplejavaserver .
