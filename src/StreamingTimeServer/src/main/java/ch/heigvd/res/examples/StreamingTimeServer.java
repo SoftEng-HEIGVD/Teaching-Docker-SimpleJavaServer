@@ -17,8 +17,8 @@ import java.util.logging.Logger;
  * then waits until one (only one!) client makes a connection request. When the
  * client arrives, the server does not even check if the client sends data. It
  * simply writes the current time, every second, during 15 seconds.
- *
- * To test the server, simply open a terminal, do a "telnet localhost 2205" and
+ * <p>
+ * To test the server, simply open a terminal, do a "nc localhost 2205" and
  * see what you get back. Use Wireshark to have a look at the transmitted TCP
  * segments.
  *
@@ -36,58 +36,39 @@ public class StreamingTimeServer {
   /**
    * This method does the entire processing.
    */
-  public void start() {
-    System.out.println("Starting server...");
+  private void start() throws IOException, InterruptedException {
+    LOG.log(Level.INFO, "Starting server...");
 
     ServerSocket serverSocket = null;
     Socket clientSocket = null;
     BufferedReader reader = null;
     PrintWriter writer = null;
 
-    try {
-      LOG.log(Level.INFO, "Creating a server socket and binding it on any of the available network interfaces and on port {0}", new Object[]{Integer.toString(listenPort)});
-      serverSocket = new ServerSocket(listenPort, 50, InetAddress.getLocalHost());
-      logServerSocketAddress(serverSocket);
+    LOG.log(Level.INFO, "Creating a server socket and binding it on any of the available network interfaces and on port {0}", new Object[]{Integer.toString(listenPort)});
+    serverSocket = new ServerSocket(listenPort, 50, InetAddress.getLocalHost());
+    logServerSocketAddress(serverSocket);
 
-      LOG.log(Level.INFO, "Waiting (blocking) for a connection request on {0} : {1}", new Object[]{serverSocket.getInetAddress(), Integer.toString(serverSocket.getLocalPort())});
-      clientSocket = serverSocket.accept();
+    LOG.log(Level.INFO, "Waiting (blocking) for a connection request on {0} : {1}", new Object[]{serverSocket.getInetAddress(), Integer.toString(serverSocket.getLocalPort())});
+    clientSocket = serverSocket.accept();
 
-      LOG.log(Level.INFO, "A client has arrived. We now have a client socket with following attributes:");
-      logSocketAddress(clientSocket);
+    LOG.log(Level.INFO, "A client has arrived. We now have a client socket with following attributes:");
+    logSocketAddress(clientSocket);
 
-      LOG.log(Level.INFO, "Getting a Reader and a Writer connected to the client socket...");
-      reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-      writer = new PrintWriter(clientSocket.getOutputStream());
+    LOG.log(Level.INFO, "Getting a Reader and a Writer connected to the client socket...");
+    reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+    writer = new PrintWriter(clientSocket.getOutputStream());
 
-      LOG.log(Level.INFO, "Starting my job... sending current time to the client for {0} ms", testDuration);
-      for (int i = 0; i < numberOfIterations; i++) {
-        writer.println(String.format("{'IP address': '%s',  time' : '%s'}", serverSocket.getInetAddress(), new Date()));
-        writer.flush();
-        LOG.log(Level.INFO, "Sent data to client, doing a pause...");
-        Thread.sleep(pauseDuration);
-      }
-    } catch (IOException | InterruptedException ex) {
-      LOG.log(Level.SEVERE, ex.getMessage());
-    } finally {
-      LOG.log(Level.INFO, "We are done. Cleaning up resources, closing streams and sockets...");
-      try {
-        reader.close();
-      } catch (IOException ex) {
-        Logger.getLogger(StreamingTimeServer.class.getName()).log(Level.SEVERE, null, ex);
-      }
+    LOG.log(Level.INFO, "Starting my job... sending current time to the client for {0} ms", testDuration);
+    for (int i = 0; i < numberOfIterations; i++) {
+      writer.println(String.format("{'IP address': '%s',  time' : '%s'}", serverSocket.getInetAddress(), new Date()));
+      writer.flush();
+      LOG.log(Level.INFO, "Sent data to client, doing a pause...");
+      Thread.sleep(pauseDuration);
+      reader.close();
       writer.close();
-      try {
-        clientSocket.close();
-      } catch (IOException ex) {
-        Logger.getLogger(StreamingTimeServer.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      try {
-        serverSocket.close();
-      } catch (IOException ex) {
-        Logger.getLogger(StreamingTimeServer.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      clientSocket.close();
+      serverSocket.close();
     }
-
   }
 
   /**
@@ -118,9 +99,14 @@ public class StreamingTimeServer {
    */
   public static void main(String[] args) {
     System.setProperty("java.util.logging.SimpleFormatter.format", "%5$s %n");
-
     StreamingTimeServer server = new StreamingTimeServer();
-    server.start();
+    try {
+      server.start();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
 }

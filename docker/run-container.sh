@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker run java-streaming-server
+docker run oliechti/teaching-docker-simplejavaserver
