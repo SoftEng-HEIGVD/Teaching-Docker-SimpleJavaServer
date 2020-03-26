@@ -64,11 +64,11 @@ public class StreamingTimeServer {
       writer.flush();
       LOG.log(Level.INFO, "Sent data to client, doing a pause...");
       Thread.sleep(pauseDuration);
-      reader.close();
-      writer.close();
-      clientSocket.close();
-      serverSocket.close();
     }
+    reader.close();
+    writer.close();
+    clientSocket.close();
+    serverSocket.close();
   }
 
   /**
